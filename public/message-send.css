@@ -1,0 +1,25 @@
+#message-send {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  #channel-id,
+  #message-content,
+  #send-button {
+    margin: 0 10px;
+  }
+  
+  #send-button {
+    background-color: #7289da;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  #send-button:hover {
+    background-color: #677bc4;
+  }

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/css">
+	<title>Authorized Page</title>
+	<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+	<style>
+		body {
+			background-color: #1c1c1c;
+			color: #f0f0f0;
+			font-family: monospace;
+			font-size: 16px;
+			line-height: 1.5;
+		}
+		.terminal {
+			border: 1px solid #555;
+			border-radius: 10px;
+			padding: 10px;
+			margin-top: 20px;
+			white-space: pre-wrap;
+			overflow-x: auto;
+			max-height: 400px;
+		}
+		.terminal pre {
+			margin: 0;
+		}
+		.terminal pre:last-child {
+			margin-bottom: 5px;
+		}
+		.terminal pre.error {
+			color: #ff5555;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		.input-group {
+			display: flex;
+			align-items: center;
+			margin: 10px;
+		}
+
+		label {
+			font-size: 20px;
+			margin-right: 10px;
+		}
+
+		input[type="text"], textarea {
+			background-color: #333;
+			color: #f0f0f0;
+			border: none;
+			border-radius: 10px;
+			padding: 10px;
+			margin-right: 10px;
+			font-family: monospace;
+			font-size: 16px;
+			line-height: 1.5;
+			resize: none;
+			flex: 1;
+		}
+
+		input[type="color"] {
+			margin-right: 10px;
+			width: 50px;
+			height: 30px;
+			border-radius: 10px;
+			border: none;
+			padding: 0;
+			cursor: pointer;
+		}
+
+		.send-buttons {
+			display: flex;
+			align-items: center;
+			margin-top: 20px;
+		}
+
+		.send-button {
+			background-color: #7289da;
+			color: #fff;
+			border: none;
+			border-radius: 10px;
+			padding: 10px;
+			margin-right: 10px;
+			cursor: pointer;
+			font-size: 16px;
+			line-height: 1.5;
+			width: 150px;
+			text-align: center;
+		}
+
+		.send-button:hover {
+			background-color: #677bc4;
+		}
+		#profile-pic {
+			border-radius: 50%;
+		}
+		#send-buttons {
+		background-color: #008CBA;
+		border: none;
+		color: white;
+		padding: 10px 20px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+		transition-duration: 0.4s;
+		}
+
+		#send-buttons:hover {
+		background-color: #006F8B;
+		}
+		#send-button {
+		background-color: #008CBA;
+		border: none;
+		color: white;
+		padding: 10px 20px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+		transition-duration: 0.4s;
+		}
+
+		#send-buttonn:hover {
+		background-color: #006F8B;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<img src="" alt="Profile Picture" id="profile-pic">
+		<span id="username"></span><span id="discriminator"></span>
+	</div>
+	<div>
+		<label for="channel-id">Channel ID:</label>
+		<input type="text" id="channel-id">
+		<label for="message-content">Message Content:</label>
+		<input type="text" id="message-content">
+		<button id="send-buttons">Send Message</button>
+	</div>
+	<div>
+		<h1>Embed Sender</h1>
+	<label for="title">Title:</label>
+	<input type="text" id="title"><br><br>
+	<label for="description">Description:</label><br>
+	<textarea id="description" rows="5" cols="50"></textarea><br><br>
+	<label for="url">URL:</label>
+	<input type="text" id="url"><br><br>
+	<label for="color">Color:</label>
+	<input type="color" id="color"><br><br>
+	<label for="thumbnail">Thumbnail URL:</label>
+	<input type="text" id="thumbnail"><br><br>
+	<label for="footer">Footer:</label>
+	<input type="text" id="footer"><br><br>
+	<button id="send-button">Send Embed</button>
+	</div>
+	<script>
+		// Retrieve access token and token type from fragment identifier
+		const fragment = new URLSearchParams(window.location.hash.slice(1));
+		const accessToken = fragment.get('access_token');
+		const tokenType = fragment.get('token_type');
+		// Connect to the Socket.IO server
+		const socket = io('http://localhost:3000');
+
+		// Handle messages received from the Socket.IO server
+		socket.on('message', (data) => {
+			const logList = document.getElementById('log-list');
+			const logElement = document.createElement('pre');
+			logElement.textContent = data;
+			if (data.startsWith('ERROR:')) {
+				logElement.classList.add('error');
+			}
+			logList.appendChild(logElement);
+			logList.scrollTop = logList.scrollHeight;
+		});
+
+		// Retrieve user data
+		fetch('https://discord.com/api/users/@me', {
+			headers: {
+				authorization: `${tokenType} ${accessToken}`,
+			},
+		})
+			.then(response => response.json())
+			.then(user => {
+				// Display profile picture
+				document.getElementById('profile-pic').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+
+				// Display username and discriminator
+				document.getElementById('username').textContent = user.username;
+				document.getElementById('discriminator').textContent = `#${user.discriminator}`;
+			})
+			.catch(console.error);
+
+		// Send message function
+		function sendMessage() {
+		const channelId = document.getElementById('channel-id').value;
+		const messageContent = document.getElementById('message-content').value;
+		const payload = { channelId: channelId, messageContent: messageContent };
+		const options = {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payload),
+		};
+		fetch('http://localhost:3001/send-message', options)
+		.then(response => {
+			console.log(`Message sent to channel ${channelId}: ${messageContent}`);
+		})
+		.catch(error => {
+			console.error(error);
+		});
+		}
+		
+	document.getElementById('send-button').addEventListener('click', sendMessage);
+</script>
+<script>
+	// Send embed function
+	function sendEmbed() {
+		const title = document.getElementById('title').value;
+		const description = document.getElementById('description').value;
+		const url = document.getElementById('url').value;
+		const color = document.getElementById('color').value.substring(1); // remove '#' from color code
+		const thumbnail = document.getElementById('thumbnail').value;
+		const footer = document.getElementById('footer').value;
+		const payload = {
+			title: title,
+			description: description,
+			url: url,
+			color: color,
+			thumbnail: thumbnail,
+			footer: footer
+		};
+		const options = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		};
+		fetch('http://localhost:3001/send-embed', options)
+			.then(response => response.json())
+			.then(data => console.log(data))
+			.catch(error => console.error(error));
+	}
+
+	document.getElementById('send-buttons').addEventListener('click', sendMessage);
+	document.getElementById('send-button').addEventListener('click', sendEmbed);
+</script>
+<h2>Log</h2>
+<div class="terminal">
+	<pre id="log-list"></pre>
+</div>
+</body>
+</html> 
