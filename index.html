@@ -1,61 +1,42 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>My Discord OAuth2 App</title>
-</head>
-<body>
-	<div id="info">
-		Hoi!
-	</div>
-	<!-- Note: This example uses the implicit grant flow (https://discordjs.guide/oauth2/#implicit-grant-flow), so make sure you use `response_type=token` here -->
-	<a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=1070274938424004638&redirect_uri=http%3A%2F%2Fwosca.github.io%2Fauthorized&response_type=token&scope=identify%20guilds">Identify Yourself</a>
-	<div id="guild-content" style="display: none;">
-		<p>You have successfully authenticated with Discord!</p>
-		<!-- Put the content you only want to show if the user is authenticated here -->
-	</div>
-	<script>
-		function generateRandomString() {
-			let randomString = '';
-			const randomNumber = Math.floor(Math.random() * 10);
-
-			for (let i = 0; i < 20 + randomNumber; i++) {
-				randomString += String.fromCharCode(33 + Math.floor(Math.random() * 94));
-			}
-
-			return randomString;
-		}
-
-		window.onload = () => {
-			const fragment = new URLSearchParams(window.location.hash.slice(1));
-			const [accessToken, tokenType, state] = [fragment.get('access_token'), fragment.get('token_type'), fragment.get('state')];
-
-			if (!accessToken) {
-				const randomString = generateRandomString();
-				localStorage.setItem('oauth-state', randomString);
-
-				document.getElementById('login').href += `&state=${encodeURIComponent(btoa(randomString))}`;
-				return document.getElementById('login').style.display = 'block';
-			}
-
-			if (localStorage.getItem('oauth-state') !== atob(decodeURIComponent(state))) {
-				return console.log('You may have been click-jacked!');
-			}
-
-			fetch('https://discord.com/api/users/@me', {
-				headers: {
-					authorization: `${tokenType} ${accessToken}`,
-				},
-			})
-				.then(result => result.json())
-				.then(response => {
-					const { username, discriminator } = response;
-					document.getElementById('info').innerText += ` ${username}#${discriminator}`;
-
-				})
-				.catch(console.error);
-
-			document.getElementById('guild-content').style.display = 'block';
-		}
-	</script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Website</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>Welcome to my website!</h1>
+    </div>
+    <div class="section">
+      <h2>Section 1</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
+        ipsum id enim egestas suscipit. Sed vel urna nec mi luctus molestie
+        quis nec magna. Integer sagittis, mauris nec luctus facilisis, metus
+        nunc varius metus, in rhoncus nisl dolor ut ex.
+      </p>
+    </div>
+    <div class="section">
+      <h2>Section 2</h2>
+      <p>
+        Phasellus eu lacus vel justo efficitur consequat. Praesent rutrum
+        mauris non semper finibus. Duis at imperdiet mi. Etiam auctor sapien
+        elit, vel hendrerit leo bibendum vel. Sed eget tellus metus. Etiam id
+        diam vitae urna convallis luctus sed eget justo.
+      </p>
+    </div>
+    <div class="section">
+      <h2>Section 3</h2>
+      <p>
+        Vestibulum in lacus commodo, pharetra leo a, malesuada neque. Sed ac
+        posuere urna, vel commodo sem. Curabitur aliquam quam vel neque
+        tristique posuere. Nam et sem vitae dolor feugiat sollicitudin nec
+        in sapien.
+      </p>
+    </div>
+    <script src="main.js"></script>
+  </body>
 </html>
