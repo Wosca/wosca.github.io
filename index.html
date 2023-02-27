@@ -14,9 +14,22 @@
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
-
+    <style>
+      a:link, a:visited {
+        background-color: #1d5dff;
+        color: white;
+        padding: 14px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+      }
+      
+      a:hover, a:active {
+        background-color: rgb(64, 0, 255);
+      }
+      </style>
     <div class="header">
-      <h1><a data-scroll href="#bazinga">Welcome to my website!</a></h1>
+      <h1><a data-scroll href="#bazinga">Welcome! Click to scroll</a></h1>
     </div>
     <div class="section">
       <h2>Section 1</h2>
@@ -34,6 +47,12 @@
       <h2>Section 3</h2>
       <p>
         Why are you still scrolling.
+      </p>
+    </div>
+    <div class="section">
+      <h2>Links</h2>
+      <p>
+        <a href="calculator.html">Page 2</a>
       </p>
     </div>
     <script>
