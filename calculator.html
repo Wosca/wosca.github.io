@@ -22,6 +22,20 @@
           let totalInterest = addedInterest + principal;
           document.getElementById("result").innerHTML = totalInterest.toFixed(2);
         }
+      } else if (interval === "daily") {
+        const gooder = ("365")
+        if (type === "compound") {
+          let betterrate = rate / 100;
+          let form = 1 + (betterrate / gooder);
+          let result = principal * Math.pow(form, time);
+          document.getElementById("result").innerHTML = result.toFixed(2);
+        } else {
+          let betterrate = rate / 100;
+          let good = time / gooder;
+          let addedInterest = principal * time * betterrate;
+          let totalInterest = addedInterest + principal;
+          document.getElementById("result").innerHTML = totalInterest.toFixed(2);
+        }
       } else {
         const gooder = ("1")
         if (type === "compound") {
@@ -54,6 +68,7 @@
     <input type="number" id="time" min="0" step="1"><br><br>
     <label for="interval">Interest type:</label>
     <select id="interval">
+      <option value="daily">Daily</option>
       <option value="monthly">Monthly</option>
       <option value="yearly">Yearly</option>
     </select><br><br>
